@@ -1,29 +1,28 @@
 body {
-  width: max-content;
   padding: 10px;
-  overflow-x: scroll;
+  overflow: hidden;
+}
+
+.wrapper {
+  overflow-x: auto;
 }
 
 .floor {
   position: relative;
-  width: 100%;
   height: 150px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-.floor span {
+.floor div {
   position: sticky;
   left: 8px;
-  display: block;
-  font-weight: bold;
-  text-transform: capitalize;
+  width: fit-content;
+  z-index: 999;
 }
 
 .button-grp {
-  position: sticky;
-  left: 8px;
   display: flex;
   flex-direction: column;
   width: fit-content;
@@ -66,8 +65,9 @@ body {
   position: relative;
   display: flex;
   align-items: center;
-  min-width: 100%;
+  width: max-content;
   height: 150px;
+  padding: 0 16px;
   background-color: rgb(221, 220, 220);
 }
 
@@ -76,9 +76,9 @@ body {
   flex-direction: row;
   min-width: 100px;
   height: 90%;
-  margin-left: 100px;
   overflow-x: hidden;
   border: black 2px solid;
+  margin-left: 100px;
 }
 
 .lift-container .lift.lift:last-child {
