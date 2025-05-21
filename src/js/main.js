@@ -4,6 +4,11 @@ const numberOfLifts = params.get("number_of_lifts");
 
 const floorContainer = document.querySelector(".container");
 const liftContainer = document.querySelector(".lift-container");
+const wrapperContainer = document.querySelector(".wrapper");
+
+window.addEventListener("load", () => {
+  floorContainer.style.width = `${liftContainer.scrollWidth}px`;
+});
 
 if (numberOfFloors < 2 || numberOfLifts === null) {
   window.location.href = "index.html";
@@ -11,9 +16,9 @@ if (numberOfFloors < 2 || numberOfLifts === null) {
 
 for (let i = numberOfFloors; i > 0; i--) {
   floorContainer.innerHTML += `<div class="floor ${i}" id="floor_${i}">
-          <span>Floor ${i}</span>
+          <div>Floor ${i}</div>
           <div class="button-grp">
-            <button type="button" name="up" class="up" onClick=getLiftToFloor(${i})>
+            <button type="button" name="up" class="up" onClick="getLiftToFloor(${i}, true)">
               UP
             </button>
             <button type="button" name="down" class="down" onClick=getLiftToFloor(${i})>
@@ -25,33 +30,64 @@ for (let i = numberOfFloors; i > 0; i--) {
 }
 
 for (let i = 1; i <= numberOfLifts; i++) {
-  liftContainer.innerHTML += `<div class="lift" lift_floor=0>
+  liftContainer.innerHTML += `<div class="lift" isIdle="true">
         <span></span>
         <span></span>
       </div>`;
 }
 
-async function getLiftToFloor(floor_number) {
-  const lift = document.querySelector(`.lift[lift_floor="0"]`);
+async function getLiftToFloor(floor_number, isUp) {
+  const lift = document.querySelector(`.lift[isIdle="true"]`);
+  lift.setAttribute("isIdle", false);
 
   lift.style.transform = `translateY(-${floor_number * 152}px)`;
   lift.style.transition = ` ${floor_number * 2}s transform linear`;
-  lift.setAttribute("lift_floor", floor_number);
 
   await wait(2000 * floor_number);
   openLiftDoors(lift);
-  await wait(2000);
-
-  await wait(1000);
-  closeLiftDorrs(lift);
 
   await wait(3000);
-  getLiftToFloorZero(lift);
+  closeLiftDorrs(lift);
+  await wait(2500);
+
+  if (!isUp) {
+    getLiftToFloorZero(lift, floor_number);
+  } else {
+    getLiftToTopFloor(lift, floor_number);
+  }
 }
 
-function getLiftToFloorZero(lift) {
+async function getLiftToTopFloor(lift, currentFloor) {
+  lift.style.transform = `translateY(-${numberOfFloors * 152}px)`;
+  lift.style.transition = ` ${
+    (numberOfFloors - currentFloor) * 2
+  }s transform linear`;
+
+  await wait(2000 * (numberOfFloors - currentFloor));
+  openLiftDoors(lift);
+
+  await wait(3000);
+  closeLiftDorrs(lift);
+  await wait(2500);
+
+  lift.setAttribute("isIdle", true);
+
+  await wait(5000);
   lift.style.transform = `translateY(0)`;
-  lift.setAttribute("lift_floor", 0);
+  lift.style.transition = ` ${numberOfFloors * 2}s transform linear`;
+}
+
+async function getLiftToFloorZero(lift, currentFloor) {
+  lift.style.transform = `translateY(0)`;
+
+  await wait(2000 * currentFloor);
+  openLiftDoors(lift);
+
+  await wait(3000);
+  closeLiftDorrs(lift);
+  await wait(2500);
+
+  lift.setAttribute("isIdle", true);
 }
 
 function openLiftDoors(lift) {
